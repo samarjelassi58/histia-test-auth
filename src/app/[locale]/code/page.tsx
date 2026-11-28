@@ -1,5 +1,7 @@
 import { createOTP } from "@better-auth/utils/otp";
 import { symmetricDecrypt } from "better-auth/crypto";
+import { getIntlayer, Locales } from "intlayer";
+import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { auth } from "@/lib/auth";
@@ -40,29 +42,30 @@ const loadAccounts = async () => {
 
 const time = (date: Date) => date.toLocaleTimeString("fr-FR");
 
-const Code = ({ value, sentAt }: { value?: string | null; sentAt?: Date }) =>
+const Code = ({ value, sentAt, sentLabel }: { value?: string | null; sentAt?: Date; sentLabel: string }) =>
   value ? (
     <>
       <span className="text-2xl font-semibold tracking-widest tabular-nums">{value}</span>
-      {sentAt && <span className="block text-xs opacity-60">sent {time(sentAt)}</span>}
+      {sentAt && <span className="block text-xs opacity-60">{sentLabel} {time(sentAt)}</span>}
     </>
   ) : (
     <span className="opacity-30">—</span>
   );
 
 // Reads the database on every request, so it streams in behind the static page shell.
-const Accounts = async () => {
+const Accounts = async ({ locale }: { locale: typeof Locales.ENGLISH | typeof Locales.FRENCH }) => {
   await connection();
   const accounts = await loadAccounts();
+  const content = getIntlayer("code-helper", locale);
 
   return (
     <table className="w-full border-collapse text-left">
       <thead>
         <tr className="border-b border-current/20 text-xs uppercase opacity-60">
-          <th className="py-2 pr-4 font-normal">Account</th>
-          <th className="py-2 pr-4 font-normal">App code</th>
-          <th className="py-2 pr-4 font-normal">Email code</th>
-          <th className="py-2 font-normal">Reset link</th>
+          <th className="py-2 pr-4 font-normal">{content.account}</th>
+          <th className="py-2 pr-4 font-normal">{content.appCode}</th>
+          <th className="py-2 pr-4 font-normal">{content.emailCode}</th>
+          <th className="py-2 font-normal">{content.resetLink}</th>
         </tr>
       </thead>
       <tbody>
@@ -72,7 +75,7 @@ const Accounts = async () => {
               {account.email}
               {account.recoveryCodes.length > 0 && (
                 <details className="text-xs opacity-60">
-                  <summary className="cursor-pointer">Recovery codes</summary>
+                  <summary className="cursor-pointer">{content.recoveryCodes}</summary>
                   {account.recoveryCodes.map((code) => (
                     <div key={code}>{code}</div>
                   ))}
@@ -80,18 +83,18 @@ const Accounts = async () => {
               )}
             </td>
             <td className="py-3 pr-4">
-              <Code value={account.totp} />
+              <Code value={account.totp} sentLabel={content.sent} />
             </td>
             <td className="py-3 pr-4">
-              <Code value={account.emailCode?.content} sentAt={account.emailCode?.createdAt} />
+              <Code value={account.emailCode?.content} sentAt={account.emailCode?.createdAt} sentLabel={content.sent} />
             </td>
             <td className="py-3">
               {account.resetLink ? (
                 <>
                   <a className="underline" href={account.resetLink.content}>
-                    Open link
+                    {content.openLink}
                   </a>
-                  <span className="block text-xs opacity-60">sent {time(account.resetLink.createdAt)}</span>
+                  <span className="block text-xs opacity-60">{content.sent} {time(account.resetLink.createdAt)}</span>
                 </>
               ) : (
                 <span className="opacity-30">—</span>
@@ -104,7 +107,13 @@ const Accounts = async () => {
   );
 };
 
-export default function CodePage() {
+export default async function CodePage({ params }: PageProps<"/[locale]/code">) {
+  const { locale } = await params;
+  if (locale !== Locales.ENGLISH && locale !== Locales.FRENCH) {
+    notFound();
+  }
+  const content = getIntlayer("code-helper", locale);
+
   return (
     <main className="mx-auto flex w-full max-w-[48rem] flex-col gap-6 p-8 font-mono text-sm">
       {/* The app code changes every 30 seconds, so the page reloads itself. */}
@@ -112,11 +121,11 @@ export default function CodePage() {
       <header className="flex flex-col gap-1">
         <h1 className="text-xl font-semibold">/code</h1>
         <p className="opacity-60">
-          Password for every test account: <strong>{TEST_PASSWORD}</strong>
+          {content.testPassword} <strong>{TEST_PASSWORD}</strong>
         </p>
       </header>
-      <Suspense fallback={<p className="opacity-60">Loading…</p>}>
-        <Accounts />
+      <Suspense fallback={<p className="opacity-60">{content.loading}</p>}>
+        <Accounts locale={locale} />
       </Suspense>
     </main>
   );

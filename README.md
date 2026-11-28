@@ -24,23 +24,26 @@ bun run dev
 | `src/lib/auth.ts` | Better Auth server configuration |
 | `src/lib/auth-client.ts` | Better Auth client (`authClient`), with the two-factor plugin |
 | `src/app/api/auth/[...all]/route.ts` | All auth endpoints, under `/api/auth` |
-| `src/app/code/page.tsx` | The `/code` helper page (see below) |
+| `src/app/[locale]/code/page.tsx` | The code helper page (see below) |
 | `src/app/globals.css` | Stolos design tokens (colors, text sizes, spacing, radii) and the `glassmorphism` utility |
 | `src/components/ui/` | `Button`, `Input`, `PasswordInput`, copied from the Stolos web app |
 | `src/components/sectors/` | Company sectors from the Stolos web app: list, colours and icons (`sectors.ts`) and the `SectorTag` component. Sector names are not translated: that is part of the exercise. The rest of the company card is yours to build. |
 | `src/components/company/company-status.ts` | Company statuses from the Stolos web app (`CompanyStatus`) |
-| `src/app/page.tsx` | Start page: preview of these building blocks, to replace with your screens |
+| `src/app/[locale]/page.tsx` | Start page: preview of these building blocks, to replace with your screens |
+| `intlayer.config.ts` | Intlayer configuration for English and French |
 
 The tokens redefine part of Tailwind's scale: `text-xs` … `text-xl` follow the Stolos sizes, and the spacing names (`xs`, `s`, `sm`, `m`, `l`, `xl`, `2xl`, `3xl`, `4xl`) also apply to sizing utilities, so `max-w-xl` is 1.5rem. Use explicit values such as `max-w-[36rem]` for widths.
 
-No real email is sent and no authenticator app is needed. Open **`/code`** in another tab: for every account it shows the current authenticator code, the last code "sent by email", the recovery codes and the last password-reset link.
+No real email is sent and no authenticator app is needed. Open **`/en/code`** or **`/fr/code`** in another tab: for every account it shows the current authenticator code, the last code "sent by email", the recovery codes and the last password-reset link.
+
+English and French content is declared in `*.content.ts` files next to the pages that use it. Intlayer generates its dictionaries when the application builds.
 
 ## Routes
 
 | Path | What it is |
 |---|---|
-| `/` | Start page: preview of the provided building blocks. Replace it with your screens. |
-| `/code` | Helper page: codes, recovery codes and reset links of every account (see above). |
+| `/en`, `/fr` | Start page in English or French: preview of the provided building blocks. |
+| `/en/code`, `/fr/code` | Helper page: codes, recovery codes and reset links of every account (see above). |
 | `/api/auth/*` | Auth endpoints served by Better Auth, listed below. |
 
 No other page exists yet: sign-in, sign-up, verification and password-reset pages are yours to create, at the paths you choose.

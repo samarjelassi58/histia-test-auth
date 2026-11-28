@@ -21,8 +21,10 @@
     "better-auth": "^1.7.25",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "intlayer": "^9.9.1",
     "lucide-react": "^1.75.0",
     "next": "16.4.6",
+    "next-intlayer": "^9.9.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-hook-form": "^7.92.0",
@@ -35,6 +37,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "eslint-plugin-intlayer": "9.9.1",
     "prisma": "7.10.1",
     "tailwindcss": "4.3.3",
     "typescript": "^5"
