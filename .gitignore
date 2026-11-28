@@ -48,3 +48,6 @@ next-env.d.ts
 # Intlayer
 .intlayer
 /.vscode/skills/
+
+# Personal notes
+/mon-suivi-personnel.md

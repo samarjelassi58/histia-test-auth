@@ -44,7 +44,9 @@ English and French content is declared in `*.content.ts` files next to the pages
 |---|---|
 | `/en`, `/fr` | Start page in English or French: preview of the provided building blocks. |
 | `/en/code`, `/fr/code` | Helper page: codes, recovery codes and reset links of every account (see above). |
+| `/en/company-preview`, `/fr/company-preview` | Temporary preview of a company card using data from the companies endpoint. |
 | `/api/auth/*` | Auth endpoints served by Better Auth, listed below. |
+| `/api/companies` | Example company data for the background cards, including English and French descriptions. |
 
 No other page exists yet: sign-in, sign-up, verification and password-reset pages are yours to create, at the paths you choose.
 
